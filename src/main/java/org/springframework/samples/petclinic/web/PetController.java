@@ -40,6 +40,7 @@ import java.util.Collection;
 public class PetController {
 
     private final ClinicService clinicService;
+    private static final String CREATE_OR_UPDATE = "pets/createOrUpdatePetForm";
 
     @Autowired
     public PetController(ClinicService clinicService) {
@@ -53,8 +54,7 @@ public class PetController {
 
     @ModelAttribute("owner")
     public Owner findOwner(@PathVariable("ownerId") int ownerId) {
-        Owner owner = this.clinicService.findOwnerById(ownerId);
-        return owner;
+    	return this.clinicService.findOwnerById(ownerId);
     }
 
     @InitBinder("owner")
@@ -72,7 +72,7 @@ public class PetController {
         Pet pet = new Pet();
         owner.addPet(pet);
         model.put("pet", pet);
-        return "pets/createOrUpdatePetForm";
+        return CREATE_OR_UPDATE;
     }
 
     @RequestMapping(value = "/pets/new", method = RequestMethod.POST)
@@ -82,7 +82,7 @@ public class PetController {
         }
         if (result.hasErrors()) {
             model.put("pet", pet);
-            return "pets/createOrUpdatePetForm";
+            return CREATE_OR_UPDATE;
         } else {
             owner.addPet(pet);
             this.clinicService.savePet(pet);
@@ -94,14 +94,14 @@ public class PetController {
     public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
         Pet pet = this.clinicService.findPetById(petId);
         model.put("pet", pet);
-        return "pets/createOrUpdatePetForm";
+        return CREATE_OR_UPDATE;
     }
 
     @RequestMapping(value = "/pets/{petId}/edit", method = RequestMethod.POST)
     public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner, ModelMap model) {
         if (result.hasErrors()) {
             model.put("pet", pet);
-            return "pets/createOrUpdatePetForm";
+            return CREATE_OR_UPDATE;
         } else {
             owner.addPet(pet);
             this.clinicService.savePet(pet);

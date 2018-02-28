@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class OwnerController {
 
     private final ClinicService clinicService;
+    private static final String CREATE_OR_UPDATE = "owners/createOrUpdateOwnerForm";
 
 
     @Autowired
@@ -59,13 +60,13 @@ public class OwnerController {
     public String initCreationForm(Map<String, Object> model) {
         Owner owner = new Owner();
         model.put("owner", owner);
-        return "owners/createOrUpdateOwnerForm";
+        return CREATE_OR_UPDATE;
     }
 
     @RequestMapping(value = "/owners/new", method = RequestMethod.POST)
     public String processCreationForm(@Valid Owner owner, BindingResult result) {
         if (result.hasErrors()) {
-            return "owners/createOrUpdateOwnerForm";
+            return CREATE_OR_UPDATE;
         } else {
             this.clinicService.saveOwner(owner);
             return "redirect:/owners/" + owner.getId();
@@ -94,8 +95,8 @@ public class OwnerController {
             return "owners/findOwners";
         } else if (results.size() == 1) {
             // 1 owner found
-            owner = results.iterator().next();
-            return "redirect:/owners/" + owner.getId();
+            Owner owner1 = results.iterator().next();
+            return "redirect:/owners/" + owner1.getId();
         } else {
             // multiple owners found
             model.put("selections", results);
@@ -107,13 +108,13 @@ public class OwnerController {
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
         Owner owner = this.clinicService.findOwnerById(ownerId);
         model.addAttribute(owner);
-        return "owners/createOrUpdateOwnerForm";
+        return CREATE_OR_UPDATE;
     }
 
     @RequestMapping(value = "/owners/{ownerId}/edit", method = RequestMethod.POST)
     public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
         if (result.hasErrors()) {
-            return "owners/createOrUpdateOwnerForm";
+            return CREATE_OR_UPDATE;
         } else {
             owner.setId(ownerId);
             this.clinicService.saveOwner(owner);
